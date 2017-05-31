@@ -42,10 +42,9 @@ function (_) {
     _.each(metrics, function(v, k) {
         var datapoints = [];
         _.each(intervals, function(interval) {
-            if (metrics[k][interval] === undefined || metrics[k][interval] === null) {
-              metrics[k][interval] = 0;
+            if (metrics[k][interval] !== undefined && metrics[k][interval] !== null) {
+              datapoints.push([self._formatValue(metrics[k][interval]), interval]);
             }
-            datapoints.push([self._formatValue(metrics[k][interval]), interval]);
           });
         timeSeries.push({target: k, datapoints: self.extrapolate(datapoints)});
       });
