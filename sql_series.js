@@ -10,6 +10,7 @@ function (_) {
     this.tillNow = options.tillNow;
     this.from = options.from;
     this.to = options.to;
+    this.annotation = options.annotation;
   }
 
   var p = SqlSeries.prototype;
@@ -50,6 +51,25 @@ function (_) {
       });
 
     return timeSeries;
+  };
+
+  p.getAnnotations = function () {
+    var list = [];
+    var self = this;
+
+    _.each(this.series, function (serie) {
+        var data = {
+          annotation: self.annotation,
+          time: + new Date(self._formatValue(serie[self.annotation.timeCol])),
+          title: serie[self.annotation.titleCol],
+          tags: serie[self.annotation.tagsCol] || '',
+          text: serie[self.annotation.textCol] || ''
+        };
+
+        list.push(data);
+    });
+
+    return list;
   };
 
   p.extrapolate = function(datapoints) {
