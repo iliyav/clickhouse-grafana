@@ -97,6 +97,28 @@ System.register(["lodash", "./sql_series", "./sql_query", "./response_parser"], 
                 return { status: "success", message: "Data source is working", title: "Success" };
             });
         };
+        this.annotationQuery = function (options) {
+            if (!options.annotation.query || options.annotation.query === '') {
+                options.annotation.query =
+                    'SELECT ' +
+                    '$timeColumn * 1000' + ' AS "time", ' +
+                    (options.annotation.tags || 'NULL') + ' AS "tags", ' +
+                    (options.annotation.title || 'NULL') + ' AS "title", ' +
+                    (options.annotation.text || 'NULL') + ' AS "text" ' +
+                    'FROM ' + options.annotation.schema + '.' + options.annotation.table + ' ' +
+                    'WHERE $timeFilter';
+            }
+
+            var queryModel = new sql_query_1.default({query: options.annotation.query, interval:'10s'}, templateSrv, options);
+            var query = queryModel.replace(options);
+
+            return this._seriesQuery(query).then(function(response) {
+                if (!response || !response.rows) {
+                    return;
+                }
+                return new sql_series_1.default({series: response.data, annotation: options.annotation}).getAnnotations();
+            });
+        };
         this._seriesQuery = function (query) {
             query = query.replace(/(?:\r\n|\r|\n)/g, ' ');
             query += ' FORMAT JSON';
