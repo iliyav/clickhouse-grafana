@@ -113,9 +113,6 @@ System.register(["lodash", "./sql_series", "./sql_query", "./response_parser"], 
             var query = queryModel.replace(options);
 
             return this._seriesQuery(query).then(function(response) {
-                if (!response || !response.rows) {
-                    return;
-                }
                 return new sql_series_1.default({series: response.data, annotation: options.annotation}).getAnnotations();
             });
         };
